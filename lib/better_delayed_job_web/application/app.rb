@@ -143,9 +143,9 @@ class BetterDelayedJobWeb < Sinatra::Base
     rel =
       case type
       when :working
-        rel.where('locked_at IS NOT NULL')
+        rel.where(locked_at: { '$ne' => nil })
       when :failed
-        rel.where('last_error IS NOT NULL')
+        rel.where(last_error: { '$ne' => nil })
       when :pending
         rel.where(:attempts => 0, :locked_at => nil)
       else
