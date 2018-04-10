@@ -5,11 +5,9 @@ require 'delayed_job'
 
 class BetterDelayedJobWeb < Sinatra::Base
   set :root, File.dirname(__FILE__)
+  set :static, true
+  set :public_folder, File.expand_path('../public', __FILE__)
   set :views, File.expand_path('../views', __FILE__)
-
-  use Rack::Static,
-    root: File.expand_path('../', __FILE__),
-    urls: ['/images', '/stylesheets', '/javascripts']
 
   # Enable sessions so we can use CSRF protection
   enable :sessions
@@ -106,7 +104,7 @@ class BetterDelayedJobWeb < Sinatra::Base
 
   %w(enqueued working pending failed).each do |page|
     get "/#{page}" do
-      @jobs     = delayed_jobs(page.to_sym, @queues).order('created_at desc, id desc').offset(start).limit(per_page)
+      @jobs     = delayed_jobs(page.to_sym, @queues).order(created_at: :desc, id: :desc).offset(start).limit(per_page)
       @all_jobs = delayed_jobs(page.to_sym, @queues)
       erb page.to_sym
     end
